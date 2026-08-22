@@ -14,11 +14,10 @@ export default {
     },
     extend: {
       colors: {
-        ink: "#101111",
-        cream: "#F5F3EE",
-        lime: "#C9FF45",
-        lavender: "#C8B4FF",
-        plum: "#A991FF",
+        navy: "#071D38",
+        teal: "#0BA69D",
+        gold: "#F2D369",
+        mist: "#F1F4F6",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -64,8 +63,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["Space Grotesk", "Arial", "sans-serif"],
-        display: ["DM Serif Display", "Georgia", "serif"],
+        sans: ["DM Sans", "Arial", "sans-serif"],
+        display: ["Manrope", "Arial", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
