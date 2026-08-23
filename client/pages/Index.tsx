@@ -150,13 +150,41 @@ function ServiceCard({ service, onSelect }: { service: Service; onSelect: () => 
 export default function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [pageTilt, setPageTilt] = useState({ x: 0, y: 0 });
+  const [pagePressed, setPagePressed] = useState(false);
+
+  const resetPageMotion = () => {
+    setPageTilt({ x: 0, y: 0 });
+    setPagePressed(false);
+  };
+
   const navigate = (id: string) => {
     setMenuOpen(false);
     scrollToSection(id);
   };
 
   return (
-    <main className="dark-site min-h-screen overflow-hidden bg-[#071d38] text-white">
+    <main
+      className="dark-site relative isolate min-h-screen overflow-hidden text-white"
+      onPointerMove={(event) => {
+        const x = event.clientY / window.innerHeight - 0.5;
+        const y = event.clientX / window.innerWidth - 0.5;
+        setPageTilt({ x: Number((-x * 1.35).toFixed(2)), y: Number((y * 1.35).toFixed(2)) });
+      }}
+      onPointerDown={() => setPagePressed(true)}
+      onPointerUp={resetPageMotion}
+      onPointerCancel={resetPageMotion}
+      onPointerLeave={resetPageMotion}
+    >
+      <div
+        className="page-depth-backdrop"
+        data-pressed={pagePressed}
+        aria-hidden="true"
+        style={{
+          transform: `perspective(1400px) rotateX(${pageTilt.x}deg) rotateY(${pageTilt.y}deg) translateZ(${pagePressed ? 18 : 0}px) scale(${pagePressed ? 1.012 : 1})`,
+          background: `radial-gradient(circle at ${50 + pageTilt.y * 18}% ${50 + pageTilt.x * 18}%, rgba(66, 204, 192, .15), transparent 34%), linear-gradient(135deg, #06172b 0%, #0a2747 47%, #071d38 100%)`,
+        }}
+      />
       <header className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-[#06172b]/90 text-white shadow-[0_18px_60px_rgba(0,0,0,0.2)] backdrop-blur-xl">
         <div className="mx-auto flex h-[74px] max-w-[1380px] items-center justify-between px-5 sm:px-8 lg:px-10">
           <button type="button" onClick={() => navigate("top")} className="flex items-center gap-3 text-left" aria-label="GTK Projects home">

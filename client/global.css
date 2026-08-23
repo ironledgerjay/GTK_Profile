@@ -96,6 +96,30 @@
     font-family: "DM Sans", sans-serif;
   }
 
+  .page-depth-backdrop {
+    position: fixed;
+    z-index: 1;
+    inset: 0;
+    pointer-events: none;
+    opacity: .23;
+    mix-blend-mode: screen;
+    transition: transform 260ms ease-out, opacity 220ms ease-out, filter 220ms ease-out, background 260ms ease-out;
+    will-change: transform, background;
+  }
+
+  .page-depth-backdrop[data-pressed="true"] {
+    opacity: .48;
+    filter: brightness(1.18) saturate(1.2);
+    box-shadow: inset 0 0 0 1px rgba(66, 204, 192, .15), 0 0 80px rgba(66, 204, 192, .14);
+  }
+
+  .dark-site > header,
+  .dark-site > section,
+  .dark-site > footer {
+    position: relative;
+    z-index: 2;
+  }
+
   .hero-grid {
     background-image: linear-gradient(rgba(66, 204, 192, .08) 1px, transparent 1px), linear-gradient(90deg, rgba(66, 204, 192, .08) 1px, transparent 1px);
     background-size: 82px 82px;
