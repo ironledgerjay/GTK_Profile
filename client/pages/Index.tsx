@@ -25,6 +25,8 @@ const imageUrls = {
   paint: "https://images.pexels.com/photos/1669754/pexels-photo-1669754.jpeg?auto=compress&cs=tinysrgb&w=1200",
 };
 
+const logoUrl = "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F1a3078a3a001427c95faf582a843623b?format=webp&width=800&height=1200";
+
 type Service = {
   icon: LucideIcon;
   title: string;
@@ -98,26 +100,46 @@ function SectionLabel({ children, light = false }: { children: React.ReactNode; 
   );
 }
 
-function ServiceCard({ service }: { service: Service }) {
+function TiltSurface({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+  return (
+    <div
+      className={className}
+      style={{ transform: `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}
+      onMouseMove={(event) => {
+        const bounds = event.currentTarget.getBoundingClientRect();
+        const x = (event.clientY - bounds.top) / bounds.height - 0.5;
+        const y = (event.clientX - bounds.left) / bounds.width - 0.5;
+        setTilt({ x: Number((-x * 6).toFixed(2)), y: Number((y * 6).toFixed(2)) });
+      }}
+      onMouseLeave={() => setTilt({ x: 0, y: 0 })}
+    >
+      {children}
+    </div>
+  );
+}
+
+function ServiceCard({ service, onSelect }: { service: Service; onSelect: () => void }) {
   const Icon = service.icon;
   return (
-    <article className="service-card group rounded-[3px] border border-[#dfe5e7] bg-[#f8fafb] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#14a59c] hover:bg-white hover:shadow-[0_14px_35px_rgba(14,44,75,0.1)] sm:p-6">
-      <div className="mb-5 flex items-start justify-between">
-        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#d8f4ed] text-[#0aa49b] transition-colors group-hover:bg-[#0aa49b] group-hover:text-white">
-          <Icon size={22} strokeWidth={1.8} />
-        </span>
-        <span className="text-[10px] font-bold tracking-[0.15em] text-[#9aabb2]">GTK / {String(services.indexOf(service) + 1).padStart(2, "0")}</span>
-      </div>
-      <h3 className="max-w-[220px] text-[17px] font-semibold leading-5 tracking-[-0.03em] text-[#0a2543]">{service.title}</h3>
-      <ul className="mt-4 space-y-1.5 text-[11px] leading-4 text-[#5c6b73]">
-        {service.items.map((item) => <li key={item} className="flex gap-2"><span className="text-[#14a59c]">•</span>{item}</li>)}
-      </ul>
-    </article>
+    <TiltSurface className="tilt-surface">
+      <button type="button" onClick={onSelect} className="service-card group block w-full rounded-[3px] border border-[#dfe5e7] bg-[#f8fafb] p-5 text-left transition-all duration-300 hover:border-[#14a59c] hover:bg-white hover:shadow-[0_14px_35px_rgba(14,44,75,0.1)] sm:p-6">
+        <div className="mb-5 flex items-start justify-between">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#d8f4ed] text-[#0aa49b] transition-colors group-hover:bg-[#0aa49b] group-hover:text-white"><Icon size={22} strokeWidth={1.8} /></span>
+          <span className="text-[10px] font-bold tracking-[0.15em] text-[#9aabb2]">GTK / {String(services.indexOf(service) + 1).padStart(2, "0")}</span>
+        </div>
+        <h3 className="max-w-[220px] text-[17px] font-semibold leading-5 tracking-[-0.03em] text-[#0a2543]">{service.title}</h3>
+        <ul className="mt-4 space-y-1.5 text-[11px] leading-4 text-[#5c6b73]">{service.items.map((item) => <li key={item} className="flex gap-2"><span className="text-[#14a59c]">•</span>{item}</li>)}</ul>
+        <span className="service-card-gloss" aria-hidden="true" />
+      </button>
+    </TiltSurface>
   );
 }
 
 export default function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
   const navigate = (id: string) => {
     setMenuOpen(false);
     scrollToSection(id);
@@ -128,7 +150,7 @@ export default function Index() {
       <header className="fixed inset-x-0 top-0 z-40 bg-[#071d38]/95 text-white shadow-[0_1px_0_rgba(255,255,255,0.09)] backdrop-blur-md">
         <div className="mx-auto flex h-[74px] max-w-[1380px] items-center justify-between px-5 sm:px-8 lg:px-10">
           <button type="button" onClick={() => navigate("top")} className="flex items-center gap-3 text-left" aria-label="GTK Projects home">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#0ba69d] text-white shadow-[0_0_0_5px_rgba(11,166,157,0.15)]"><House size={23} strokeWidth={1.8} /></span>
+            <img src={logoUrl} alt="GTK Projects 3D logo" className="logo-mark h-11 w-11 rounded-[30%] object-cover" />
             <span><span className="block text-[10px] font-semibold uppercase tracking-[0.19em] text-[#f2d369]">GTK</span><span className="block text-[18px] font-bold uppercase leading-4 tracking-[-0.04em]">Projects</span></span>
           </button>
           <nav className="hidden items-center gap-8 lg:flex" aria-label="Main navigation">
@@ -153,7 +175,7 @@ export default function Index() {
 
       <section className="bg-[#0e315a] px-5 py-20 text-white sm:px-8 lg:px-10 lg:py-28"><div className="mx-auto max-w-[1380px]"><SectionLabel light>Our foundation</SectionLabel><h2 className="max-w-[620px] text-5xl font-semibold leading-[0.92] tracking-[-0.06em] sm:text-7xl">Vision, Mission<br /><span className="text-[#f2d369]">& values.</span></h2><div className="mt-14 grid gap-3 md:grid-cols-3">{[["Our vision", "To be the go-to small projects team for Johannesburg households and small businesses, proof that quality doesn’t need a big-company price tag.", "#0ba69d"], ["Our mission", "To deliver honest, reliable painting, renovation, and maintenance work on budget, on time, and without the runaround.", "#f2d369"], ["Our values", "Honesty in every quote · Respect for your home · Pride in small details · Fair pricing · Always leave it better.", "#0ba69d"]].map(([title, text, color]) => <article key={title} className="min-h-[260px] border border-white/10 bg-[#153b69] p-6 sm:p-7"><span className="mb-7 block h-6 w-6 rounded-full" style={{ backgroundColor: color }} /><h3 className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#f2d369]">{title}</h3><p className="mt-7 max-w-[280px] text-sm leading-6 text-white/75">{text}</p></article>)}</div></div></section>
 
-      <section id="services" className="bg-white px-5 py-20 sm:px-8 lg:px-10 lg:py-28"><div className="mx-auto max-w-[1380px]"><SectionLabel>What we do</SectionLabel><div className="flex flex-col justify-between gap-6 md:flex-row md:items-end"><h2 className="max-w-[750px] text-5xl font-semibold leading-[0.92] tracking-[-0.065em] sm:text-7xl">Full range of <span className="text-[#0ba69d]">small jobs</span><br />& renovations.</h2><p className="max-w-[270px] text-sm leading-6 text-[#68767d]">From a quick fix to a considered renovation, we bring the same care to every job.</p></div><div className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{services.map((service) => <ServiceCard key={service.title} service={service} />)}</div><p className="mt-6 text-center text-[11px] italic text-[#0ba69d]">Plus: carpentry, minor electrical & plumbing fixes, small demolitions, and general property upkeep — ask us about your job.</p></div></section>
+      <section id="services" className="bg-white px-5 py-20 sm:px-8 lg:px-10 lg:py-28"><div className="mx-auto max-w-[1380px]"><SectionLabel>What we do</SectionLabel><div className="flex flex-col justify-between gap-6 md:flex-row md:items-end"><h2 className="max-w-[750px] text-5xl font-semibold leading-[0.92] tracking-[-0.065em] sm:text-7xl">Full range of <span className="text-[#0ba69d]">small jobs</span><br />& renovations.</h2><p className="max-w-[270px] text-sm leading-6 text-[#68767d]">From a quick fix to a considered renovation, we bring the same care to every job.</p></div><div className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{services.map((service) => <ServiceCard key={service.title} service={service} onSelect={() => setSelectedService(service)} />)}</div><p className="mt-6 text-center text-[11px] italic text-[#0ba69d]">Plus: carpentry, minor electrical & plumbing fixes, small demolitions, and general property upkeep — ask us about your job.</p></div></section>
 
       <section id="work" className="bg-[#071d38] px-5 py-20 text-white sm:px-8 lg:px-10 lg:py-28"><div className="mx-auto max-w-[1380px]"><div className="mb-12 flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><SectionLabel light>From the site</SectionLabel><h2 className="max-w-[450px] text-5xl font-semibold leading-[0.9] tracking-[-0.06em] sm:text-7xl">Work that<br /><span className="text-[#f2d369]">holds up.</span></h2></div><p className="max-w-[250px] text-sm leading-6 text-white/60">A few recent transformations from around Johannesburg.</p></div><div className="grid gap-3 lg:grid-cols-[1.05fr_0.95fr]"><article className="relative min-h-[470px] overflow-hidden bg-[#13365e]"><img src={imageUrls.wall} alt="Plaster repair work on a residential wall" className="absolute inset-0 h-full w-full object-cover opacity-85" /><div className="absolute inset-0 bg-gradient-to-t from-[#071d38] via-transparent to-transparent" /><div className="absolute bottom-6 left-6"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#42c9bd]">Wall repairs</p><h3 className="mt-2 max-w-[300px] text-3xl font-semibold leading-5 tracking-[-0.05em] sm:text-4xl">Plastering &amp;<br />damp proofing</h3></div></article><div className="grid gap-3 sm:grid-cols-2"><article className="relative min-h-[230px] overflow-hidden bg-[#d2d8d3]"><img src={imageUrls.paint} alt="Painting a wall during a home refresh" className="h-full w-full object-cover opacity-90" /><div className="absolute inset-0 bg-gradient-to-t from-[#071d38]/80 to-transparent" /><span className="absolute bottom-4 left-4 text-[10px] font-semibold text-white">Fresh interior &amp; exterior paint</span></article><article className="relative min-h-[230px] overflow-hidden bg-[#bdc9c5]"><img src={imageUrls.extension} alt="Brick extension under construction" className="h-full w-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-[#071d38]/80 to-transparent" /><span className="absolute bottom-4 left-4 text-[10px] font-semibold text-white">Extension &amp; outdoor work</span></article><div className="flex min-h-[230px] items-end bg-[#0ba69d] p-5"><p className="max-w-[190px] text-sm font-medium leading-5 text-white">Every project gets a clear quote, a clean site and a proper finish.</p></div><div className="flex min-h-[230px] flex-col justify-between bg-[#f2d369] p-5 text-[#0a2543]"><span className="text-3xl">↗</span><p className="text-[11px] font-bold uppercase leading-4 tracking-[0.12em]">Built for real homes.<br />Made to last.</p></div></div></div></div></section>
 
@@ -164,6 +186,19 @@ export default function Index() {
       <section id="contact" className="bg-[#0e315a] text-white"><div className="mx-auto grid max-w-[1380px] lg:grid-cols-[0.85fr_1.15fr]"><div className="bg-[#071d38] px-5 py-20 sm:px-8 lg:px-10 lg:py-28"><SectionLabel light>Let’s get your job done</SectionLabel><h2 className="max-w-[430px] text-6xl font-semibold leading-[0.86] tracking-[-0.075em] sm:text-8xl">LET’S GET<br /><span className="text-[#f2d369]">YOUR JOB</span><br />DONE.</h2><div className="mt-10 h-1 w-16 bg-[#f2d369]" /><p className="mt-7 max-w-[290px] text-sm italic leading-6 text-white/60">Big job or small — send us a message and we’ll come take a look, free of charge.</p><a href="mailto:info@gtkprojects.co.za?subject=Free%20site%20quote%20request" className="mt-8 inline-flex items-center gap-3 bg-[#0ba69d] px-5 py-3.5 text-[10px] font-bold uppercase tracking-[0.13em] text-white transition-colors hover:bg-[#f2d369] hover:text-[#0a2543]">Request a free site quote <ArrowRight size={14} /></a></div><div className="px-5 py-20 sm:px-8 lg:px-16 lg:py-28"><div className="space-y-7">{[[Mail, "Email", "info@gtkprojects.co.za", "mailto:info@gtkprojects.co.za"], [Globe2, "Website", "www.gtkprojects.co.za", "https://www.gtkprojects.co.za"], [MapPin, "Address", "20 Petroy Drive, Magaliesig, Johannesburg", "#contact"]].map(([Icon, label, value, href]) => { const ContactIcon = Icon as LucideIcon; return <a key={label as string} href={href as string} className="group flex items-center gap-4"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[#0ba69d]"><ContactIcon size={21} /></span><span><span className="block text-[9px] font-bold uppercase tracking-[0.18em] text-[#f2d369]">{label as string}</span><span className="mt-1 block text-sm text-white/85 transition-colors group-hover:text-[#f2d369]">{value as string}</span></span></a>; })}</div><div className="mt-12 border border-white/10 bg-[#153b69] p-6"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#42c9bd]">We serve</p><p className="mt-3 text-xs leading-5 text-white/65">The Greater Johannesburg area — Sandton, Randburg, Roodepoort, Midrand, Fourways, and surrounds. Projects beyond borders considered on request.</p></div></div></div></section>
 
       <footer className="border-t border-white/10 bg-[#071d38] px-5 py-7 text-white/50 sm:px-8 lg:px-10"><div className="mx-auto flex max-w-[1380px] flex-col justify-between gap-4 text-[9px] font-semibold uppercase tracking-[0.17em] sm:flex-row"><span>© 2025 / 2026 GTK Projects. All rights reserved.</span><span>Part of the GTK Services Group</span><span>Johannesburg, South Africa</span></div></footer>
+
+      {selectedService && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#071d38]/75 p-5 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={`${selectedService.title} details`}>
+          <div className="relative w-full max-w-lg overflow-hidden bg-white p-7 text-[#0a2543] shadow-2xl sm:p-9">
+            <button type="button" onClick={() => setSelectedService(null)} className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-[#071d38] text-white transition-colors hover:bg-[#0ba69d]" aria-label="Close service details"><X size={17} /></button>
+            <img src={logoUrl} alt="GTK Projects 3D logo" className="mb-6 h-20 w-20 rounded-[24%] object-cover" />
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#0ba69d]">GTK Projects service</p>
+            <h2 className="mt-2 max-w-[380px] text-4xl font-bold leading-[0.95] tracking-[-0.06em]">{selectedService.title}</h2>
+            <ul className="mt-7 grid gap-3 border-t border-[#dfe5e7] pt-6 sm:grid-cols-2">{selectedService.items.map((item) => <li key={item} className="flex items-start gap-2 text-sm text-[#5c6b73]"><Check size={16} className="mt-0.5 shrink-0 text-[#0ba69d]" />{item}</li>)}</ul>
+            <a href="mailto:info@gtkprojects.co.za?subject=GTK%20Projects%20service%20enquiry" className="mt-8 inline-flex items-center gap-2 bg-[#f2d369] px-4 py-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[#0a2543]">Ask about this service <ArrowRight size={14} /></a>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

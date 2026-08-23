@@ -115,6 +115,62 @@
   .header-link:hover::after {
     width: 100%;
   }
+
+  .logo-mark,
+  .hero-logo {
+    animation: logo-float 5s ease-in-out infinite;
+    transform-style: preserve-3d;
+  }
+
+  .hero-logo {
+    animation-delay: -1.5s;
+  }
+
+  .tilt-surface {
+    transform-style: preserve-3d;
+    transition: transform 180ms ease-out;
+    will-change: transform;
+  }
+
+  .tilt-surface > button {
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0);
+  }
+
+  .tilt-surface > button::before {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, rgba(255,255,255,.5), transparent 32%, transparent 68%, rgba(11,166,157,.08));
+    content: "";
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 250ms ease;
+  }
+
+  .tilt-surface:hover > button::before {
+    opacity: 1;
+  }
+
+  .service-card-gloss {
+    position: absolute;
+    right: -30px;
+    bottom: -30px;
+    width: 105px;
+    height: 105px;
+    border: 1px solid rgba(11,166,157,.18);
+    border-radius: 50%;
+    transition: transform 400ms ease;
+  }
+
+  .tilt-surface:hover .service-card-gloss {
+    transform: scale(1.4) translate(-8px, -8px);
+  }
+}
+
+@keyframes logo-float {
+  0%, 100% { transform: translateY(0) rotateZ(0deg) rotateX(0deg); }
+  50% { transform: translateY(-7px) rotateZ(3deg) rotateX(4deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
