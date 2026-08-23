@@ -52,6 +52,26 @@
   button,
   a {
     -webkit-tap-highlight-color: transparent;
+    transform: translateZ(0);
+    transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+  }
+
+  button:hover,
+  a:hover {
+    transform: translateY(-2px) translateZ(0);
+  }
+
+  button:active,
+  a:active,
+  button:focus-visible,
+  a:focus-visible {
+    transform: translateY(2px) scale(.985) translateZ(0);
+  }
+
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid #f2d369;
+    outline-offset: 4px;
   }
 
   ::selection {
@@ -128,8 +148,16 @@
 
   .tilt-surface {
     transform-style: preserve-3d;
-    transition: transform 180ms ease-out;
+    transition: transform 180ms ease-out, box-shadow 180ms ease-out;
     will-change: transform;
+  }
+
+  .tilt-surface[data-pressed="true"] {
+    box-shadow: 0 26px 55px rgba(0, 0, 0, .32), 0 0 0 1px rgba(66, 204, 192, .2);
+  }
+
+  .tilt-surface[data-pressed="true"] > button {
+    filter: brightness(1.08) saturate(1.08);
   }
 
   .tilt-surface > button {

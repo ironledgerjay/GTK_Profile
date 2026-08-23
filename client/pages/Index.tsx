@@ -102,18 +102,28 @@ function SectionLabel({ children, light = false }: { children: React.ReactNode; 
 
 function TiltSurface({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [pressed, setPressed] = useState(false);
+
+  const resetSurface = () => {
+    setTilt({ x: 0, y: 0 });
+    setPressed(false);
+  };
 
   return (
     <div
       className={className}
-      style={{ transform: `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}
-      onMouseMove={(event) => {
+      data-pressed={pressed}
+      style={{ transform: `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateZ(${pressed ? 14 : 0}px) scale(${pressed ? 1.018 : 1})` }}
+      onPointerMove={(event) => {
         const bounds = event.currentTarget.getBoundingClientRect();
         const x = (event.clientY - bounds.top) / bounds.height - 0.5;
         const y = (event.clientX - bounds.left) / bounds.width - 0.5;
-        setTilt({ x: Number((-x * 6).toFixed(2)), y: Number((y * 6).toFixed(2)) });
+        setTilt({ x: Number((-x * 7).toFixed(2)), y: Number((y * 7).toFixed(2)) });
       }}
-      onMouseLeave={() => setTilt({ x: 0, y: 0 })}
+      onPointerDown={() => setPressed(true)}
+      onPointerUp={resetSurface}
+      onPointerCancel={resetSurface}
+      onPointerLeave={resetSurface}
     >
       {children}
     </div>
