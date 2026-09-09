@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
+  ArrowLeft,
   ArrowRight,
   Check,
   ChevronDown,
@@ -26,6 +27,69 @@ const imageUrls = {
 };
 
 const logoUrl = "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F17732c7468824b27bf862df1d9e6356f?format=webp&width=800&height=1200";
+
+const projectImages = [
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fea61ddcd95724c919ad864b620671ee2?format=webp&width=800&height=1200", title: "Exterior paint refresh", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F0a7eeb40fd6a4915abee6189132b2f6a?format=webp&width=800&height=1200", title: "Exterior colour finish", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F66e4787c8b864da687ea1f41f76d5b7a?format=webp&width=800&height=1200", title: "Wall finish detail", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F3aa36bf2efbc4d1db3b86c692dcb1704?format=webp&width=800&height=1200", title: "Boundary wall maintenance", category: "Maintenance" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F2ae57baea2ad4a918dc3db3654d74a68?format=webp&width=800&height=1200", title: "Residential exterior repaint", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F725175eca073448c8071561b71d1efa1?format=webp&width=800&height=1200", title: "Side passage repairs", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F0f120d6e749144b4a6d2909ff215ee07?format=webp&width=800&height=1200", title: "Roofline and exterior work", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fbdb2b4bb1d644c9cb9aec38ee3a9a9b7?format=webp&width=800&height=1200", title: "Gutter and wall detail", category: "Maintenance" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fc95c9849b6764f649fef5de305980164?format=webp&width=800&height=1200", title: "Exterior maintenance", category: "Maintenance" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F030953f2b4cc4ed58522105b64312d40?format=webp&width=800&height=1200", title: "Window and wall finish", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F103a119eebb54d68ac03c2fef98b52ef?format=webp&width=800&height=1200", title: "Exterior painting work", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F45d4f6f010c645d3a6cfbe6aa2233785?format=webp&width=800&height=1200", title: "Side passage restoration", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fdbb65c1f47164b9693fc81eabf299786?format=webp&width=800&height=1200", title: "Completed exterior finish", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F2dab895910184f8b87ac3cd5db1e0b83?format=webp&width=800&height=1200", title: "Boundary wall finish", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fe01601aefe13481e980e98422d3c38d1?format=webp&width=800&height=1200", title: "Water treatment installation", category: "Water systems" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F01224ad9ada64067bfd4eb266cdc4348?format=webp&width=800&height=1200", title: "Water treatment pipework", category: "Water systems" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F1d8aa3c925284a9ab5067dfd97dde6f4?format=webp&width=800&height=1200", title: "Water treatment plant", category: "Water systems" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F473b4888839641ce97408c76cd7b3288?format=webp&width=800&height=1200", title: "Water systems detail", category: "Water systems" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Ffabf7d2fcc5744ed9132c3f2f138a137?format=webp&width=800&height=1200", title: "Property maintenance", category: "Maintenance" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Ff38bf360440a40fc9e2225790c464d67?format=webp&width=800&height=1200", title: "Exterior wall repair", category: "Wall repairs" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F90795204a02340ebba34f875f58b5f92?format=webp&width=800&height=1200", title: "Exterior painting prep", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fea763308f09a4178a9baaeb153d52abe?format=webp&width=800&height=1200", title: "Exterior finish detail", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fc288b5189a274943aed6ef6ec87f86d6?format=webp&width=800&height=1200", title: "Exterior renovation work", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F808615df3c804e428e7e5299f7af42cd?format=webp&width=800&height=1200", title: "Exterior walls and windows", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fa1bc5acf07944de39c70d3f400f22126?format=webp&width=800&height=1200", title: "Painting in progress", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fd366439538164c59aae626f345530dd6?format=webp&width=800&height=1200", title: "Peeling wall repairs", category: "Wall repairs" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F4df77c75205e46f1b044f1cacb66f978?format=webp&width=800&height=1200", title: "Wall restoration", category: "Wall repairs" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fd9d4cf78abb542b7b1ca4da5c1b00dd4?format=webp&width=800&height=1200", title: "Gate and boundary repairs", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F10efaf7249af4c69b43fdb64fc802b81?format=webp&width=800&height=1200", title: "Exterior wall repair", category: "Wall repairs" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F379fc2d6c2b7470c945183c72fe39153?format=webp&width=800&height=1200", title: "Home renovation site", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fae20c33d7e39445fb4ca38f588df4696?format=webp&width=800&height=1200", title: "Exterior work in progress", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F3af49ea539e64b68b1fa718492b9c498?format=webp&width=800&height=1200", title: "Wall repair", category: "Wall repairs" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F1d0acf5a214148c98cf64009f794371d?format=webp&width=800&height=1200", title: "Entrance and boundary", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F7c03de1844d44ff096cccef58a3734d7?format=webp&width=800&height=1200", title: "House exterior", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F70ee64afe07f44508b088173307058b0?format=webp&width=800&height=1200", title: "Exterior maintenance", category: "Maintenance" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F1732851aa47d4c91badb20eca00ac4a4?format=webp&width=800&height=1200", title: "Renovation site", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F03d8ec240d414b1c8eb7dfaae6c76861?format=webp&width=800&height=1200", title: "Wall finish", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F156775c4e0944c72b3e0cecbcbfcc684?format=webp&width=800&height=1200", title: "Exterior wall repair", category: "Wall repairs" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F3211e029fd504155bebd6c6c2eff062b?format=webp&width=800&height=1200", title: "Building exterior", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fea8eaae8c5e246879ae67cc2b243dd5d?format=webp&width=800&height=1200", title: "Interior demolition", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fce3aebdc5bc0486fb00b234fece01f04?format=webp&width=800&height=1200", title: "Interior renovation", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fdc187383a6424da98d094b0b9e55015c?format=webp&width=800&height=1200", title: "Bathroom renovation", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F344f2e5cb7764cf486384e3e4dd83842?format=webp&width=800&height=1200", title: "Floor tiling", category: "Tiling" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F2dfb1ee327af42b6bb3f8228e3470490?format=webp&width=800&height=1200", title: "Drainage excavation", category: "Drainage" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F7278d4799fae44cda97a307aa8a51976?format=webp&width=800&height=1200", title: "Drainage pipework", category: "Drainage" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F33873158aecf4cc2ad5239a50fac706e?format=webp&width=800&height=1200", title: "Drainage installation", category: "Drainage" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F83ee05cd1c214995be991a7020a0792b?format=webp&width=800&height=1200", title: "Property repair", category: "Maintenance" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F9e1dcf3defac4774b58a450ce2df00e1?format=webp&width=800&height=1200", title: "Boundary wall restoration", category: "Wall repairs" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Facb45e7760c54d14961938b99d50b925?format=webp&width=800&height=1200", title: "Exterior maintenance", category: "Maintenance" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F21d503633acb460dbdac07269fde3457?format=webp&width=800&height=1200", title: "Driveway and gate work", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F688506a1968c419ca6d8ca68160dbcaa?format=webp&width=800&height=1200", title: "Boundary wall finish", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fa192a2377fa34e51982945da013db8cb?format=webp&width=800&height=1200", title: "Exterior wall repairs", category: "Wall repairs" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F84e130b8c6be4ac88fc9d7bb219408ce?format=webp&width=800&height=1200", title: "Home exterior", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fcb6b6c818d824876ac05d64f508cdae5?format=webp&width=800&height=1200", title: "Interior renovation", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F1787fa33ec4d4a1184ab82305ee10366?format=webp&width=800&height=1200", title: "Structural repair", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fa776c9fa305b489cad77186514bcd300?format=webp&width=800&height=1200", title: "General building work", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2Fbd20375f23b243caa06195049cc2e786?format=webp&width=800&height=1200", title: "Exterior wall repair", category: "Wall repairs" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F3dd7ae525e8c4d64b85075a0f1f3e3ed?format=webp&width=800&height=1200", title: "Property transformation", category: "Renovation" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F31b36f7a8bb047bf953f13625d04f2ef?format=webp&width=800&height=1200", title: "Exterior painting", category: "Painting" },
+  { src: "https://cdn.builder.io/api/v1/image/assets%2Fdfea6679c9184e19966cac73ef185692%2F103577e0c8d7492ab38e9556a2dbcc9b?format=webp&width=800&height=1200", title: "Interior project", category: "Renovation" },
+] as const;
 
 type Service = {
   icon: LucideIcon;
@@ -150,6 +214,7 @@ function ServiceCard({ service, onSelect }: { service: Service; onSelect: () => 
 export default function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedProjectIndex, setSelectedProjectIndex] = useState<number | null>(null);
   const [pageTilt, setPageTilt] = useState({ x: 0, y: 0 });
   const [pagePressed, setPagePressed] = useState(false);
 
@@ -157,6 +222,29 @@ export default function Index() {
     setPageTilt({ x: 0, y: 0 });
     setPagePressed(false);
   };
+
+  useEffect(() => {
+    if (selectedProjectIndex === null) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelectedProjectIndex(null);
+      if (event.key === "ArrowLeft") {
+        setSelectedProjectIndex((index) => index === null ? index : (index - 1 + projectImages.length) % projectImages.length);
+      }
+      if (event.key === "ArrowRight") {
+        setSelectedProjectIndex((index) => index === null ? index : (index + 1) % projectImages.length);
+      }
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedProjectIndex]);
 
   const navigate = (id: string) => {
     setMenuOpen(false);
@@ -204,7 +292,7 @@ export default function Index() {
         <div className="hero-grid pointer-events-none absolute inset-0 opacity-30" /><div className="hero-swoop pointer-events-none absolute -right-40 top-24 h-[500px] w-[850px] rounded-[50%] border border-[#2bb8ac]/30" />
         <div className="mx-auto grid min-h-[650px] max-w-[1380px] items-center gap-14 px-5 py-20 sm:px-8 lg:grid-cols-[0.93fr_1.07fr] lg:gap-16 lg:px-10 lg:py-24">
           <div className="relative z-10"><div className="mb-7 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.21em] text-[#4accc0]"><span className="h-px w-9 bg-[#4accc0]" /> Part of the GTK Services Group</div><h1 className="max-w-[700px] text-[18vw] font-bold leading-[0.83] tracking-[-0.085em] sm:text-[115px] lg:text-[8.4rem]">SMALL<br /><span className="text-[#f2d369]">JOBS.</span><br />DONE RIGHT<span className="text-[#14a59c]">.</span></h1><p className="mt-8 max-w-[420px] text-base leading-7 text-white/70 sm:text-lg">Big-company quality, small-business prices, with no job too small.</p><div className="mt-9 flex flex-wrap gap-3"><button type="button" onClick={() => navigate("contact")} className="flex items-center gap-3 bg-[#f2d369] px-5 py-3.5 text-[11px] font-bold uppercase tracking-[0.1em] text-[#0a2543] transition-colors hover:bg-white">Get a free site quote <ArrowRight size={15} /></button><button type="button" onClick={() => navigate("services")} className="flex items-center gap-2 border border-white/30 px-5 py-3.5 text-[11px] font-bold uppercase tracking-[0.1em] text-white transition-colors hover:border-[#4accc0] hover:text-[#4accc0]">See what we do <ChevronDown size={15} /></button></div></div>
-          <div className="hero-photo-wrap relative mx-auto w-full max-w-[660px] lg:ml-auto"><div className="hero-photo absolute -left-4 top-4 h-full w-full border border-[#f2d369]/55 sm:-left-6 sm:top-6" /><div className="relative h-[380px] overflow-hidden sm:h-[510px] lg:h-[560px]"><img src={imageUrls.hero} alt="Residential home entrance during a renovation" className="h-full w-full object-cover object-center grayscale-[15%]" /><div className="absolute inset-0 bg-gradient-to-tr from-[#071d38]/75 via-transparent to-[#13a69c]/20 mix-blend-multiply" /><div className="absolute bottom-5 left-5 right-5 flex items-end justify-between border-t border-white/40 pt-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-white sm:bottom-7 sm:left-7 sm:right-7"><span>Johannesburg / South Africa</span><span>01 / 06</span></div></div><div className="absolute -bottom-6 -left-3 flex h-28 w-28 rotate-[-8deg] items-center justify-center rounded-full bg-[#14a59c] p-4 text-center text-[10px] font-bold uppercase leading-3 tracking-[0.12em] text-white shadow-xl sm:-left-10"><span>Good work<br />starts here</span></div></div>
+          <div className="hero-photo-wrap relative mx-auto w-full max-w-[660px] lg:ml-auto"><div className="hero-photo absolute -left-4 top-4 h-full w-full border border-[#f2d369]/55 sm:-left-6 sm:top-6" /><div className="relative h-[380px] overflow-hidden sm:h-[510px] lg:h-[560px]"><img src={imageUrls.hero} alt="Residential home entrance during a renovation" className="h-full w-full object-cover object-center grayscale-[15%]" /><div className="absolute inset-0 bg-gradient-to-tr from-[#071d38]/75 via-transparent to-[#13a69c]/20 mix-blend-multiply" /><div className="absolute bottom-5 left-5 right-5 flex items-end justify-between border-t border-white/40 pt-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-white sm:bottom-7 sm:left-7 sm:right-7"><span>Across South Africa</span><span>01 / 06</span></div></div><div className="absolute -bottom-6 -left-3 flex h-28 w-28 rotate-[-8deg] items-center justify-center rounded-full bg-[#14a59c] p-4 text-center text-[10px] font-bold uppercase leading-3 tracking-[0.12em] text-white shadow-xl sm:-left-10"><span>Good work<br />starts here</span></div></div>
         </div>
         <button type="button" onClick={() => navigate("difference")} className="relative mx-auto flex items-center gap-3 pb-7 text-[9px] font-bold uppercase tracking-[0.2em] text-white/50 hover:text-[#f2d369]">Scroll to explore <span className="animate-bounce">↓</span></button>
       </section>
@@ -215,7 +303,39 @@ export default function Index() {
 
       <section id="services" className="dark-panel bg-[#091f38] px-5 py-20 text-white sm:px-8 lg:px-10 lg:py-28"><div className="mx-auto max-w-[1380px]"><SectionLabel>What we do</SectionLabel><div className="flex flex-col justify-between gap-6 md:flex-row md:items-end"><h2 className="max-w-[750px] text-5xl font-semibold leading-[0.92] tracking-[-0.065em] sm:text-7xl">Full range of <span className="text-[#0ba69d]">small jobs</span><br />& renovations.</h2><p className="max-w-[270px] text-sm leading-6 text-white/55">From a quick fix to a considered renovation, we bring the same care to every job.</p></div><div className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{services.map((service) => <ServiceCard key={service.title} service={service} onSelect={() => setSelectedService(service)} />)}</div><p className="mt-6 text-center text-[11px] italic text-[#0ba69d]">Plus: carpentry, minor electrical & plumbing fixes, small demolitions, and general property upkeep. Ask us about your job.</p></div></section>
 
-      <section id="work" className="bg-[#071d38] px-5 py-20 text-white sm:px-8 lg:px-10 lg:py-28"><div className="mx-auto max-w-[1380px]"><div className="mb-12 flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><SectionLabel light>From the site</SectionLabel><h2 className="max-w-[450px] text-5xl font-semibold leading-[0.9] tracking-[-0.06em] sm:text-7xl">Work that<br /><span className="text-[#f2d369]">holds up.</span></h2></div><p className="max-w-[250px] text-sm leading-6 text-white/60">A few recent transformations from around Johannesburg.</p></div><div className="grid gap-3 lg:grid-cols-[1.05fr_0.95fr]"><article className="relative min-h-[470px] overflow-hidden rounded-2xl bg-[#13365e] shadow-[0_22px_60px_rgba(0,0,0,0.25)]"><img src={imageUrls.wall} alt="Plaster repair work on a residential wall" className="absolute inset-0 h-full w-full object-cover opacity-85" /><div className="absolute inset-0 bg-gradient-to-t from-[#071d38] via-transparent to-transparent" /><div className="absolute bottom-6 left-6"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#42c9bd]">Wall repairs</p><h3 className="mt-2 max-w-[300px] text-3xl font-semibold leading-5 tracking-[-0.05em] sm:text-4xl">Plastering &amp;<br />damp proofing</h3></div></article><div className="grid gap-3 sm:grid-cols-2"><article className="relative min-h-[230px] overflow-hidden bg-[#d2d8d3]"><img src={imageUrls.paint} alt="Painting a wall during a home refresh" className="h-full w-full object-cover opacity-90" /><div className="absolute inset-0 bg-gradient-to-t from-[#071d38]/80 to-transparent" /><span className="absolute bottom-4 left-4 text-[10px] font-semibold text-white">Fresh interior &amp; exterior paint</span></article><article className="relative min-h-[230px] overflow-hidden bg-[#bdc9c5]"><img src={imageUrls.extension} alt="Brick extension under construction" className="h-full w-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-[#071d38]/80 to-transparent" /><span className="absolute bottom-4 left-4 text-[10px] font-semibold text-white">Extension &amp; outdoor work</span></article><div className="flex min-h-[230px] items-end bg-[#0ba69d] p-5"><p className="max-w-[190px] text-sm font-medium leading-5 text-white">Every project gets a clear quote, a clean site and a proper finish.</p></div><div className="flex min-h-[230px] flex-col justify-between bg-[#f2d369] p-5 text-[#0a2543]"><span className="text-3xl">↗</span><p className="text-[11px] font-bold uppercase leading-4 tracking-[0.12em]">Built for real homes.<br />Made to last.</p></div></div></div></div></section>
+      <section id="work" className="bg-[#071d38] px-5 py-20 text-white sm:px-8 lg:px-10 lg:py-28">
+        <div className="mx-auto max-w-[1380px]">
+          <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+            <div>
+              <SectionLabel light>Our work</SectionLabel>
+              <h2 className="max-w-[600px] text-5xl font-semibold leading-[0.9] tracking-[-0.06em] sm:text-7xl">Real work.<br /><span className="text-[#f2d369]">Properly done.</span></h2>
+            </div>
+            <p className="max-w-[340px] text-sm leading-6 text-white/60">Browse recent GTK Projects work across painting, renovations, wall repairs, drainage, tiling, and water systems.</p>
+          </div>
+          <div className="mt-8 flex items-center justify-between border-y border-white/10 py-4 text-[10px] font-bold uppercase tracking-[0.17em] text-white/45">
+            <span>{projectImages.length} project photos</span>
+            <span className="text-[#42c9bd]">Tap any image to view</span>
+          </div>
+          <div className="gallery-grid mt-8">
+            {projectImages.map((project, index) => (
+              <button
+                key={`${project.src}-${index}`}
+                type="button"
+                onClick={() => setSelectedProjectIndex(index)}
+                className="gallery-tile group relative mb-3 block w-full overflow-hidden rounded-xl border border-white/10 bg-[#102f4e] text-left shadow-[0_16px_40px_rgba(0,0,0,0.2)]"
+                aria-label={`View ${project.title}`}
+              >
+                <img src={project.src} alt={project.title} loading={index > 5 ? "lazy" : "eager"} decoding="async" className="block h-auto w-full transition duration-500 group-hover:scale-[1.04]" />
+                <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#071d38] via-[#071d38]/70 to-transparent px-4 pb-4 pt-12 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  <span className="block text-[9px] font-bold uppercase tracking-[0.16em] text-[#42c9bd]">{project.category}</span>
+                  <span className="mt-1 block text-sm font-semibold text-white">{project.title}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
 
       <section className="dark-panel bg-[#091f38] px-5 py-20 text-white sm:px-8 lg:px-10 lg:py-28"><div className="mx-auto max-w-[1380px]"><SectionLabel>Why choose GTK Projects</SectionLabel><h2 className="max-w-[760px] text-5xl font-semibold leading-[0.92] tracking-[-0.065em] sm:text-7xl">Built to fit your budget,<br /><span className="text-[#0ba69d]">not break it.</span></h2><div className="mt-14 grid gap-x-14 gap-y-10 md:grid-cols-2">{reasons.map(([number, title, text]) => <article key={number} className="grid grid-cols-[48px_1fr] gap-3"><span className="text-3xl font-semibold tracking-[-0.07em] text-[#bce5dd]">{number}</span><div><h3 className="text-sm font-semibold text-white">{title}</h3><p className="mt-3 max-w-[380px] text-xs leading-5 text-white/55">{text}</p></div></article>)}</div><div className="mt-14 flex items-center gap-4 bg-[#0e315a] px-5 py-4 text-xs text-white sm:px-7"><MapPin size={24} className="shrink-0 text-[#0ba69d]" /><span>We operate across the <strong>Greater Johannesburg area</strong>, with projects taken on beyond borders on request.</span></div></div></section>
 
@@ -242,6 +362,30 @@ export default function Index() {
             <ul className="mt-7 grid gap-3 border-t border-white/10 pt-6 sm:grid-cols-2">{selectedService.items.map((item) => <li key={item} className="flex items-start gap-2 text-sm text-white/60"><Check size={16} className="mt-0.5 shrink-0 text-[#0ba69d]" />{item}</li>)}</ul>
             <a href="mailto:info@gtkprojects.co.za?subject=GTK%20Projects%20service%20enquiry" className="mt-8 inline-flex items-center gap-2 bg-[#f2d369] px-4 py-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[#0a2543]">Ask about this service <ArrowRight size={14} /></a>
           </div>
+        </div>
+      )}
+
+      {selectedProjectIndex !== null && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-[#020d1c]/95 p-4 backdrop-blur-md sm:p-8"
+          role="dialog"
+          aria-modal="true"
+          aria-label="GTK Projects work gallery"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) setSelectedProjectIndex(null);
+          }}
+        >
+          <button type="button" onClick={() => setSelectedProjectIndex(null)} className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-[#0ba69d] sm:right-8 sm:top-8" aria-label="Close project gallery"><X size={20} /></button>
+          <button type="button" onClick={() => setSelectedProjectIndex((index) => index === null ? index : (index - 1 + projectImages.length) % projectImages.length)} className="absolute left-3 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-[#0ba69d] sm:left-8" aria-label="Previous project photo"><ArrowLeft size={20} /></button>
+          <figure className="flex max-h-[calc(100vh-5rem)] max-w-[min(980px,calc(100vw-5rem))] flex-col items-center justify-center">
+            <img src={projectImages[selectedProjectIndex].src} alt={projectImages[selectedProjectIndex].title} className="max-h-[78vh] max-w-full rounded-lg object-contain shadow-[0_30px_90px_rgba(0,0,0,0.5)]" />
+            <figcaption className="mt-5 text-center">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#42c9bd]">{projectImages[selectedProjectIndex].category}</p>
+              <p className="mt-2 text-lg font-semibold text-white">{projectImages[selectedProjectIndex].title}</p>
+              <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/45">{selectedProjectIndex + 1} of {projectImages.length}</p>
+            </figcaption>
+          </figure>
+          <button type="button" onClick={() => setSelectedProjectIndex((index) => index === null ? index : (index + 1) % projectImages.length)} className="absolute right-3 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-[#0ba69d] sm:right-8" aria-label="Next project photo"><ArrowRight size={20} /></button>
         </div>
       )}
     </main>

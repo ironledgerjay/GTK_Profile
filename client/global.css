@@ -218,6 +218,28 @@
   .tilt-surface:hover .service-card-gloss {
     transform: scale(1.4) translate(-8px, -8px);
   }
+
+  .gallery-grid {
+    columns: 1;
+    column-gap: .75rem;
+  }
+
+  .gallery-tile {
+    break-inside: avoid;
+    transform: translateZ(0);
+  }
+
+  @media (min-width: 640px) {
+    .gallery-grid {
+      columns: 2;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .gallery-grid {
+      columns: 3;
+    }
+  }
 }
 
 @keyframes logo-float {
